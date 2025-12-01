@@ -1,0 +1,12 @@
+# このディレクトリにはUIアイコン・背景画像を配置します
+
+## 主な画像
+- background.jpg - メイン背景
+- logo.png - ゲームロゴ
+- star_full.png - 満点の星
+- star_empty.png - 空の星
+- button_*.png - ボタン素材
+
+## 推奨仕様
+- 形式: PNG/JPG
+- サイズ: 用途に応じて
