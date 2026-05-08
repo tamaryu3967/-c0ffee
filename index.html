@@ -56,6 +56,7 @@
             <header class="game-header">
                 <div class="customer-info">
                     <span id="customer-name">Guest</span>
+                    <span id="customer-counter"></span>
                 </div>
                 <button id="menu-btn" class="icon-btn">☰</button>
             </header>
@@ -82,11 +83,15 @@
                         <!-- Dripper/Cup -->
                         <div id="dripper" class="equipment hidden">
                             <div class="cup-container">
-                                <div class="cup-front-mask"></div> <!-- Rim & Front Wall -->
+                                <div class="cup-front-mask"></div>
                                 <div class="liquid"></div>
                                 <div class="target-line"></div>
                             </div>
-                            <div class="steam-container"></div>
+                            <div class="steam-container">
+                                <div class="steam"></div>
+                                <div class="steam"></div>
+                                <div class="steam"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,6 +124,19 @@
         <!-- Audio Resume Overlay (iOS) -->
         <div id="audio-resume-overlay" class="overlay hidden">
             <p>Tap to Resume</p>
+        </div>
+
+        <!-- Menu Overlay -->
+        <div id="menu-overlay" class="overlay hidden">
+            <div class="menu-panel">
+                <button id="menu-close-btn">✕</button>
+                <h2>#c0ffee</h2>
+                <p>コーヒーを丁寧に淹れて<br>お客様を癒やそう</p>
+                <div class="menu-stats">
+                    <span id="menu-total-customers">通算 0 人のお客様</span>
+                </div>
+                <button id="menu-restart-btn" class="btn-primary">タイトルへ戻る</button>
+            </div>
         </div>
 
     </main>

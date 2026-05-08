@@ -1,16 +1,17 @@
 import { Observer } from './Observer.js';
 import { LocalStorageWrapper } from './LocalStorageWrapper.js';
 import { SCENARIOS, TODAYS_WORDS } from './ScenarioData.js';
+import { getRandomCustomer, getRandomDialogue, evaluateCustomer } from '../data/CustomerData.js';
 
 export const GameState = {
-    WAITING: 'WAITING',       // Waiting for customer
-    GREETING: 'GREETING',     // Customer enters and greets
-    ORDERING: 'ORDERING',     // Customer orders
-    BREWING: 'BREWING',       // Grinding and Pouring phase
-    SERVING: 'SERVING',       // Serving coffee
-    EVALUATING: 'EVALUATING', // Customer reacts
-    CUSTOMER_RESULT: 'CUSTOMER_RESULT', // Result for single customer
-    SESSION_RESULT: 'SESSION_RESULT'    // End of session (Today's word)
+    WAITING: 'WAITING',
+    GREETING: 'GREETING',
+    ORDERING: 'ORDERING',
+    BREWING: 'BREWING',
+    SERVING: 'SERVING',
+    EVALUATING: 'EVALUATING',
+    CUSTOMER_RESULT: 'CUSTOMER_RESULT',
+    SESSION_RESULT: 'SESSION_RESULT'
 };
 
 export class GameStore extends Observer {
@@ -18,32 +19,30 @@ export class GameStore extends Observer {
         super();
         this.storage = new LocalStorageWrapper();
 
-        // Persistent Data
         this.data = this.storage.load('gameData', {
             collectedWords: [],
             totalCustomers: 0,
             settings: { volume: 0.5, vibration: true }
         });
 
-        // Session State
         this.state = GameState.WAITING;
         this.customersServed = 0;
         this.maxCustomers = 3;
         this.currentCustomer = null;
         this.currentScenario = null;
+        this.sessionScores = [];
+        this.todaysWord = null;
 
-        // Brewing State
         this.brewData = {
-            step: 'GRIND', // GRIND or POUR
-            grindLevel: 0, // 0-100
-            waterLevel: 0, // 0-100
+            step: 'GRIND',
+            grindLevel: 0,
+            waterLevel: 0,
             temperature: 90
         };
     }
 
     setState(newState) {
         if (this.state !== newState) {
-            console.log(`GameStore: State changed ${this.state} -> ${newState}`);
             this.state = newState;
             this.publish({ type: 'STATE_CHANGE', payload: newState });
         }
@@ -51,6 +50,7 @@ export class GameStore extends Observer {
 
     startSession() {
         this.customersServed = 0;
+        this.sessionScores = [];
         this.nextCustomer();
     }
 
@@ -62,17 +62,18 @@ export class GameStore extends Observer {
 
         this.customersServed++;
         this.currentScenario = this.getRandomScenario();
+
+        const customer = getRandomCustomer();
         this.currentCustomer = {
-            name: ['田中', '佐藤', '鈴木'][Math.floor(Math.random() * 3)],
-            variant: Math.floor(Math.random() * 3) // 0, 1, 2 for image variants
+            ...customer,
+            greetingLine: getRandomDialogue(customer, 'greeting'),
+            orderLine: getRandomDialogue(customer, 'order'),
         };
 
-        // Reset Brew Data
         this.brewData = { step: 'GRIND', grindLevel: 0, waterLevel: 0 };
 
         this.setState(GameState.GREETING);
 
-        // Auto progress for demo - タイマーIDを保存
         this.greetingTimer = setTimeout(() => this.setState(GameState.ORDERING), 2000);
     }
 
@@ -84,7 +85,6 @@ export class GameStore extends Observer {
     }
 
     getRandomScenario() {
-        // Simple random for MVP
         return SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
     }
 
@@ -95,38 +95,20 @@ export class GameStore extends Observer {
 
     evaluateBrew() {
         const { waterLevel } = this.brewData;
-        let score = 0;
-        let message = "";
-        let mood = "neutral";
+        return evaluateCustomer(this.currentCustomer, waterLevel);
+    }
 
-        if (waterLevel < 50) {
-            score = 1;
-            message = "A bit light, but gentle.";
-            mood = "neutral";
-        } else if (waterLevel < 75) {
-            score = 2;
-            message = "Good balance.";
-            mood = "happy";
-        } else if (waterLevel <= 90) {
-            score = 3;
-            message = "Perfect Brew!";
-            mood = "ecstatic";
-        } else {
-            score = 2;
-            message = "Strong and bold!";
-            mood = "surprised";
-        }
-
-        return { score, message, mood };
+    recordScore(score) {
+        this.sessionScores.push(score);
     }
 
     finishSession() {
-        // Collect a word
         const newWord = TODAYS_WORDS[Math.floor(Math.random() * TODAYS_WORDS.length)];
         if (!this.data.collectedWords.includes(newWord)) {
             this.data.collectedWords.push(newWord);
         }
         this.data.totalCustomers += this.customersServed;
+        this.todaysWord = newWord;
         this.saveData();
 
         this.setState(GameState.SESSION_RESULT);

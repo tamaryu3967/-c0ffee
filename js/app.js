@@ -1,6 +1,7 @@
 import { ViewManager } from './ViewManager.js';
 import { Observer } from './Observer.js';
 import { AssetLoader } from './AssetLoader.js';
+import { AudioManager } from './AudioManager.js';
 import { GameStore } from './GameStore.js';
 import { GameController } from './GameController.js';
 
@@ -11,24 +12,24 @@ class App {
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this.audioContext = new AudioContext();
+        this.audioManager = new AudioManager(this.audioContext);
 
         this.assetLoader = new AssetLoader(this.audioContext);
         this.store = new GameStore();
-        this.gameController = new GameController(this.store, this.viewManager, this.assetLoader);
+        this.gameController = new GameController(
+            this.store,
+            this.viewManager,
+            this.assetLoader,
+            this.audioManager
+        );
 
-        this.manifest = {
-            images: {},
-            audio: {}
-        };
+        this.manifest = { images: {}, audio: {} };
     }
 
     async init() {
-        console.log('#c0ffee: App started');
-
         this.setupEventListeners();
         this.setupVisibilityHandler();
 
-        // Initialize Controller
         this.gameController.init();
 
         this.viewManager.switchScreen('loading');
@@ -43,6 +44,7 @@ class App {
         const startBtn = document.getElementById('start-btn');
         if (startBtn) {
             startBtn.addEventListener('click', () => {
+                this.audioManager.playClick();
                 this.startGame();
             });
         }
@@ -55,23 +57,47 @@ class App {
             });
         }
 
-        // Backup Button
+        // Menu button
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                this.audioManager.playClick();
+                const overlay = document.getElementById('menu-overlay');
+                if (overlay) overlay.classList.remove('hidden');
+                // Update stats
+                const totalEl = document.getElementById('menu-total-customers');
+                if (totalEl) {
+                    totalEl.textContent = `通算 ${this.store.data.totalCustomers} 人のお客様`;
+                }
+            });
+        }
+
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        if (menuCloseBtn) {
+            menuCloseBtn.addEventListener('click', () => {
+                this.audioManager.playClick();
+                document.getElementById('menu-overlay').classList.add('hidden');
+            });
+        }
+
+        const menuRestartBtn = document.getElementById('menu-restart-btn');
+        if (menuRestartBtn) {
+            menuRestartBtn.addEventListener('click', () => {
+                location.reload();
+            });
+        }
+
+        // Backup / Share (optional features)
         const backupBtn = document.getElementById('backup-btn');
         if (backupBtn) {
             backupBtn.addEventListener('click', () => {
                 const code = this.store.getBackupCode();
                 if (code) {
-                    navigator.clipboard.writeText(code).then(() => {
-                        alert('Backup code copied to clipboard!');
-                    }).catch(err => {
-                        console.error('Failed to copy backup code', err);
-                        alert('Failed to copy code. Check console.');
-                    });
+                    navigator.clipboard.writeText(code).catch(() => {});
                 }
             });
         }
 
-        // Share Button
         const shareBtn = document.getElementById('share-btn');
         if (shareBtn) {
             shareBtn.addEventListener('click', async () => {
@@ -82,11 +108,7 @@ class App {
                             text: 'Relaxing coffee brewing simulation.',
                             url: window.location.href
                         });
-                    } catch (err) {
-                        console.log('Share canceled', err);
-                    }
-                } else {
-                    alert('Web Share API not supported on this device.');
+                    } catch (_) {}
                 }
             });
         }
@@ -107,10 +129,7 @@ class App {
     }
 
     async startGame() {
-        console.log('#c0ffee: Game Started');
         await this.resumeAudioContext();
-
-        // Start the session via Store
         this.store.startSession();
     }
 
@@ -118,10 +137,7 @@ class App {
         if (this.audioContext && this.audioContext.state === 'suspended') {
             try {
                 await this.audioContext.resume();
-                console.log('AudioContext resumed');
-            } catch (e) {
-                console.error('Failed to resume AudioContext', e);
-            }
+            } catch (_) {}
         }
     }
 }
