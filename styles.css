@@ -1,12 +1,26 @@
 :root {
-    /* Color Palette */
-    --color-bg: #2c3e50;
-    --color-accent: #c0ffee;
-    --color-text: #e0f7fa;
-    --color-text-on-accent: #2c3e50;
-    --color-overlay: rgba(44, 62, 80, 0.9);
-    --color-success: #a8e6cf;
-    --color-warning: #ffaaa5;
+    /* Chill Lofi-Cafe Palette ---------------------------------- */
+    /* warm dusty backdrop */
+    --color-bg: #2b2530;
+    --color-bg-2: #3a3340;
+    /* soft cream / latte text */
+    --color-text: #f3e9dd;
+    --color-text-soft: rgba(243, 233, 221, 0.6);
+    --color-text-faint: rgba(243, 233, 221, 0.38);
+    /* muted mint-sage accent (kept as nod to #c0ffee) */
+    --color-accent: #b8e0c8;
+    --color-accent-2: #e8c4a0;
+    /* warm peach secondary */
+    --color-peach: #e8b298;
+    --color-text-on-accent: #2b2530;
+    --color-overlay: rgba(33, 28, 38, 0.72);
+    --color-success: #b8e0c8;
+    --color-warning: #e8a59a;
+
+    /* Glass surfaces */
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-blur: 16px;
 
     /* Fonts */
     --font-ui: 'Inter', sans-serif;
@@ -30,44 +44,75 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* Prevent scroll on body */
-    background-color: #1a252f;
-    /* Darker background for PC outside container */
+    background-color: #1c1822;
     font-family: var(--font-jp), var(--font-ui), sans-serif;
     color: var(--color-text);
     user-select: none;
     -webkit-user-select: none;
     overscroll-behavior: none;
-    /* Prevent swipe navigation on iOS */
 }
 
-/* PC Background */
+/* PC Background ------------------------------------------------ */
 #app-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(circle at center, #2c3e50 0%, #1a252f 100%);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(184, 224, 200, 0.10), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(232, 178, 152, 0.12), transparent 40%),
+        linear-gradient(160deg, #241f2c 0%, #1c1822 100%);
     z-index: -1;
 }
 
-/* Main Game Container */
+/* Main Game Container ------------------------------------------ */
 #game-container {
     position: relative;
     width: 100%;
     height: 100dvh;
-    /* Mobile viewport height */
     max-width: var(--container-max-width);
     margin: 0 auto;
-    background-color: var(--color-bg);
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 60px rgba(0, 0, 0, 0.55);
     display: flex;
     flex-direction: column;
+    background-color: var(--color-bg);
 }
 
-/* Screens */
+/* Soft ambient gradient that gently drifts behind the whole game */
+#game-container::before {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 30% 25%, rgba(184, 224, 200, 0.18), transparent 45%),
+        radial-gradient(circle at 70% 75%, rgba(232, 178, 152, 0.20), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(120, 100, 140, 0.18), transparent 55%),
+        linear-gradient(160deg, #322b39 0%, #241f2c 100%);
+    animation: drift 24s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+/* subtle film-grain / paper texture overlay for that lofi feel */
+#game-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+@keyframes drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-4%, -3%) scale(1.08); }
+}
+
+/* Screens ------------------------------------------------------ */
 .screen {
     position: absolute;
     top: 0;
@@ -80,7 +125,7 @@ body {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s ease;
     z-index: 10;
 }
 
@@ -90,87 +135,115 @@ body {
     z-index: 20;
 }
 
-/* Typography */
+/* Typography --------------------------------------------------- */
 h1 {
     font-family: var(--font-ui);
-    font-size: 3rem;
-    color: var(--color-accent);
-    text-shadow: 0 0 10px rgba(192, 255, 238, 0.5);
-    margin-bottom: 0.5rem;
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    margin-bottom: 0.6rem;
+    text-shadow: 0 0 24px rgba(184, 224, 200, 0.35);
 }
 
-/* Start Screen */
+/* Start Screen ------------------------------------------------- */
 .title-area {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.4rem;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
 }
 
 .subtitle {
-    font-size: 1rem;
-    color: rgba(192, 255, 238, 0.6);
-    letter-spacing: 0.2em;
+    font-size: 0.95rem;
+    color: var(--color-accent);
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    padding-left: 0.45em;
 }
 
 .hint-text {
-    font-size: 0.8rem;
-    color: rgba(192, 255, 238, 0.4);
-    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--color-text-faint);
+    margin-top: 1.8rem;
+    letter-spacing: 0.05em;
 }
 
-/* Primary Button */
+/* Primary Button ----------------------------------------------- */
 .btn-primary {
-    padding: 14px 36px;
-    background-color: var(--color-accent);
+    padding: 15px 42px;
+    background: linear-gradient(135deg, var(--color-accent) 0%, #a8d4bd 100%);
     color: var(--color-text-on-accent);
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(192, 255, 238, 0.3);
-    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 8px 28px rgba(184, 224, 200, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
     font-family: var(--font-jp), var(--font-ui), sans-serif;
 }
 
-.btn-primary:active {
-    transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(192, 255, 238, 0.2);
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 34px rgba(184, 224, 200, 0.38);
 }
 
-/* Loading Screen */
+.btn-primary:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 4px 14px rgba(184, 224, 200, 0.22);
+}
+
+/* Loading Screen ----------------------------------------------- */
 .loader-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    color: rgba(192, 255, 238, 0.6);
-    font-size: 0.9rem;
-    letter-spacing: 0.15em;
+    gap: 1.1rem;
+    color: var(--color-text-soft);
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
 }
 
+/* Action button ------------------------------------------------ */
 .btn-action {
-    width: 120px;
-    height: 120px;
+    width: 124px;
+    height: 124px;
     border-radius: 50%;
-    background-color: var(--color-accent);
+    background: linear-gradient(135deg, var(--color-accent) 0%, #a0d0ba 100%);
     color: var(--color-text-on-accent);
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0 0 20px rgba(192, 255, 238, 0.4);
-    border: 4px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    box-shadow: 0 0 0 0 rgba(184, 224, 200, 0.5), 0 10px 30px rgba(184, 224, 200, 0.3);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
     -webkit-user-select: none;
+    cursor: pointer;
+    animation: pulse-ring 2.4s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(184, 224, 200, 0.45), 0 10px 30px rgba(184, 224, 200, 0.3); }
+    70%  { box-shadow: 0 0 0 22px rgba(184, 224, 200, 0), 0 10px 30px rgba(184, 224, 200, 0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(184, 224, 200, 0), 0 10px 30px rgba(184, 224, 200, 0.3); }
 }
 
 .btn-action:active {
-    transform: scale(0.95);
-    background-color: #a0e0d0;
+    transform: scale(0.93);
+    background: linear-gradient(135deg, #a0d0ba 0%, #8fc4ac 100%);
 }
 
-/* Game Screen Layout */
+/* Game Screen Layout ------------------------------------------- */
 .game-header {
     position: absolute;
     top: 0;
@@ -193,9 +266,10 @@ h1 {
     align-items: center;
     position: relative;
     padding-top: var(--header-height);
+    z-index: 5;
 }
 
-/* Customer Area */
+/* Customer Area ------------------------------------------------ */
 #customer-area {
     display: flex;
     flex-direction: column;
@@ -206,7 +280,7 @@ h1 {
     padding-bottom: 10px;
 }
 
-/* Counter Area */
+/* Counter Area ------------------------------------------------- */
 #counter-area {
     width: 100%;
     display: flex;
@@ -215,7 +289,6 @@ h1 {
     min-height: 180px;
 }
 
-/* Equipment Area */
 #equipment-area {
     display: flex;
     justify-content: center;
@@ -232,60 +305,79 @@ h1 {
 .grinder-icon {
     font-size: 3rem;
     line-height: 1;
-    filter: drop-shadow(0 0 8px rgba(192, 255, 238, 0.4));
+    filter: drop-shadow(0 0 10px rgba(184, 224, 200, 0.4));
 }
 
 .bean-visual {
     font-size: 1.5rem;
 }
 
-/* Customer Info (header) */
+/* Customer Info (header) --------------------------------------- */
 .customer-info {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--color-accent);
+    font-weight: 700;
+    color: var(--color-text);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    padding: 7px 14px;
+    border-radius: 30px;
 }
 
 #customer-counter {
-    font-size: 0.75rem;
-    color: rgba(192, 255, 238, 0.5);
-    font-weight: normal;
+    font-size: 0.72rem;
+    color: var(--color-accent);
+    font-weight: 500;
 }
 
-/* Icon Button (menu) */
+/* Icon Button (menu) ------------------------------------------- */
 .icon-btn {
-    background: none;
-    border: 1px solid rgba(192, 255, 238, 0.3);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
     color: var(--color-text);
-    font-size: 1.2rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    font-size: 1.1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.icon-btn:hover {
+    transform: rotate(90deg);
 }
 
 .icon-btn:active {
-    background-color: rgba(192, 255, 238, 0.1);
+    background-color: rgba(184, 224, 200, 0.15);
 }
 
-/* Action Guide Text */
+/* Action Guide Text -------------------------------------------- */
 .guide-text {
-    font-size: 0.85rem;
-    color: rgba(192, 255, 238, 0.7);
-    letter-spacing: 0.1em;
-    margin-bottom: 12px;
+    font-size: 0.82rem;
+    color: var(--color-accent);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
     min-height: 1.2em;
     text-align: center;
+    animation: breathe 2.6s ease-in-out infinite;
 }
 
-/* Overlay base */
+@keyframes breathe {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+}
+
+/* Overlay base ------------------------------------------------- */
 .overlay {
     position: absolute;
     top: 0;
@@ -293,6 +385,8 @@ h1 {
     width: 100%;
     height: 100%;
     background-color: var(--color-overlay);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 50;
     display: flex;
     align-items: center;
@@ -300,7 +394,7 @@ h1 {
     flex-direction: column;
 }
 
-/* Rotate overlay */
+/* Rotate overlay ----------------------------------------------- */
 .overlay-content {
     text-align: center;
     color: var(--color-text);
@@ -313,62 +407,73 @@ h1 {
     animation: spin 2s linear infinite;
 }
 
-/* Result Screen */
+/* Result Screen ------------------------------------------------ */
 .result-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.2rem;
-    padding: 2rem;
-    width: 100%;
-    max-width: 320px;
+    gap: 1.3rem;
+    padding: 2.4rem 2rem;
+    width: 86%;
+    max-width: 340px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    z-index: 5;
 }
 
 .result-content h2 {
-    font-size: 1.2rem;
-    color: rgba(192, 255, 238, 0.7);
-    letter-spacing: 0.15em;
+    font-size: 0.95rem;
+    color: var(--color-text-soft);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-family: var(--font-ui);
 }
 
 .stars {
-    font-size: 2rem;
-    letter-spacing: 0.2em;
-    color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-size: 2.2rem;
+    letter-spacing: 0.25em;
+    color: var(--color-accent-2);
+    text-shadow: 0 0 18px rgba(232, 196, 160, 0.6);
+    padding-left: 0.25em;
 }
 
 #result-message {
     font-size: 1rem;
     text-align: center;
     color: var(--color-text);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
-/* Today's Word Card */
+/* Today's Word Card -------------------------------------------- */
 .word-card {
-    background-color: rgba(192, 255, 238, 0.08);
-    border: 1px solid rgba(192, 255, 238, 0.3);
-    border-radius: 12px;
-    padding: 1.2rem 1.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.3rem 1.8rem;
     text-align: center;
     width: 100%;
 }
 
 .word-card h3 {
-    font-size: 0.75rem;
-    color: rgba(192, 255, 238, 0.5);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.6rem;
+    font-size: 0.7rem;
+    color: var(--color-text-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
 }
 
 #word-text {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--color-accent);
     font-family: var(--font-jp), sans-serif;
-    line-height: 1.8;
+    line-height: 1.9;
 }
 
-/* Steam Animation */
+/* Steam Animation ---------------------------------------------- */
 .steam-container {
     display: flex;
     gap: 8px;
@@ -379,7 +484,7 @@ h1 {
 
 .steam {
     width: 4px;
-    background: linear-gradient(to top, rgba(255,255,255,0.5), transparent);
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.5), transparent);
     border-radius: 4px;
     animation: steam-rise 1.5s ease-in-out infinite;
     transform-origin: bottom;
@@ -394,7 +499,7 @@ h1 {
     100% { height: 20px; opacity: 0; transform: translateY(-10px) scaleX(1.5); }
 }
 
-/* Cup front mask (rim visual) */
+/* Cup front mask (rim visual) ---------------------------------- */
 .cup-front-mask {
     position: absolute;
     top: 0;
@@ -406,54 +511,58 @@ h1 {
     z-index: 2;
 }
 
-/* Menu Overlay */
+/* Menu Overlay ------------------------------------------------- */
 #menu-overlay {
     z-index: 60;
 }
 
 .menu-panel {
-    background-color: #1e2d3d;
-    border: 1px solid rgba(192, 255, 238, 0.2);
-    border-radius: 20px;
-    padding: 2rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 26px;
+    padding: 2.2rem;
     width: 85%;
     max-width: 320px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1.3rem;
     position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .menu-panel h2 {
-    font-size: 1.5rem;
-    color: var(--color-accent);
+    font-size: 1.6rem;
+    color: var(--color-text);
     font-family: var(--font-ui), sans-serif;
+    letter-spacing: -0.01em;
 }
 
 .menu-panel p {
     font-size: 0.85rem;
-    color: rgba(192, 255, 238, 0.6);
+    color: var(--color-text-soft);
     text-align: center;
-    line-height: 1.7;
+    line-height: 1.8;
 }
 
 .menu-stats {
     font-size: 0.85rem;
-    color: rgba(192, 255, 238, 0.5);
+    color: var(--color-accent);
 }
 
 #menu-close-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 14px;
+    right: 14px;
     background: none;
     border: none;
-    color: rgba(192, 255, 238, 0.5);
+    color: var(--color-text-soft);
     font-size: 1.1rem;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -462,7 +571,7 @@ h1 {
 }
 
 #menu-close-btn:hover {
-    background-color: rgba(192, 255, 238, 0.1);
+    background-color: rgba(184, 224, 200, 0.12);
 }
 
 .controls-area {
@@ -473,11 +582,11 @@ h1 {
     justify-content: center;
     align-items: center;
     padding-bottom: 20px;
-    /* Safe area fallback */
     padding-bottom: env(safe-area-inset-bottom, 20px);
+    z-index: 5;
 }
 
-/* Overlays */
+/* Rotate overlay (mobile landscape) ---------------------------- */
 #rotate-overlay {
     display: none;
     position: fixed;
@@ -493,124 +602,90 @@ h1 {
     color: var(--color-text);
 }
 
-/* Mobile Landscape Check */
 @media screen and (max-height: 500px) and (orientation: landscape) {
     #rotate-overlay {
         display: flex;
     }
 }
 
-/* Utility */
+/* Utility ------------------------------------------------------ */
 .hidden {
     display: none !important;
 }
 
-/* Placeholder Styles */
-.customer-placeholder {
-    width: 200px;
-    height: 300px;
-    background-color: #4a6fa5;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
-
+/* Dialogue bubble ---------------------------------------------- */
 .bubble {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 15px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    padding: 14px 18px;
+    border-radius: 18px 18px 18px 4px;
     max-width: 80%;
     text-align: center;
     margin-bottom: 20px;
-    border: 1px solid var(--color-accent);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    line-height: 1.6;
+    font-size: 0.92rem;
+    animation: bubble-in 0.4s ease;
 }
 
-/* Loading Spinner */
+@keyframes bubble-in {
+    0%   { opacity: 0; transform: translateY(8px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Loading Spinner ---------------------------------------------- */
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(192, 255, 238, 0.3);
-    border-top: 4px solid var(--color-accent);
+    width: 42px;
+    height: 42px;
+    border: 3px solid rgba(184, 224, 200, 0.2);
+    border-top: 3px solid var(--color-accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Animations */
+/* Shake animation ---------------------------------------------- */
 @keyframes shake {
-    0% {
-        transform: translate(1px, 1px) rotate(0deg);
-    }
-
-    10% {
-        transform: translate(-1px, -2px) rotate(-1deg);
-    }
-
-    20% {
-        transform: translate(-3px, 0px) rotate(1deg);
-    }
-
-    30% {
-        transform: translate(3px, 2px) rotate(0deg);
-    }
-
-    40% {
-        transform: translate(1px, -1px) rotate(1deg);
-    }
-
-    50% {
-        transform: translate(-1px, 2px) rotate(-1deg);
-    }
-
-    60% {
-        transform: translate(-3px, 1px) rotate(0deg);
-    }
-
-    70% {
-        transform: translate(3px, 1px) rotate(-1deg);
-    }
-
-    80% {
-        transform: translate(-1px, -1px) rotate(1deg);
-    }
-
-    90% {
-        transform: translate(1px, 2px) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(1px, -2px) rotate(-1deg);
-    }
+    0%   { transform: translate(1px, 1px) rotate(0deg); }
+    10%  { transform: translate(-1px, -2px) rotate(-1deg); }
+    20%  { transform: translate(-3px, 0px) rotate(1deg); }
+    30%  { transform: translate(3px, 2px) rotate(0deg); }
+    40%  { transform: translate(1px, -1px) rotate(1deg); }
+    50%  { transform: translate(-1px, 2px) rotate(-1deg); }
+    60%  { transform: translate(-3px, 1px) rotate(0deg); }
+    70%  { transform: translate(3px, 1px) rotate(-1deg); }
+    80%  { transform: translate(-1px, -1px) rotate(1deg); }
+    90%  { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
 .shake-anim {
     animation: shake 0.5s;
 }
 
-/* Liquid & Cup */
+/* Liquid & Cup ------------------------------------------------- */
 .cup-container {
     position: relative;
     width: 120px;
     height: 150px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid #fff;
-    border-radius: 0 0 20px 20px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 0 0 24px 24px;
     overflow: hidden;
-    transition: box-shadow 0.3s;
+    transition: box-shadow 0.3s, border-color 0.3s;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .cup-container.guide-active {
-    box-shadow: 0 0 20px var(--color-success);
+    box-shadow: 0 0 26px var(--color-success);
     border-color: var(--color-success);
 }
 
@@ -620,8 +695,7 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #6f4e37;
-    /* Coffee Color */
+    background: linear-gradient(to bottom, #8a6347 0%, #5e4030 100%);
     transform-origin: bottom;
     transform: scaleY(0);
     will-change: transform;
@@ -637,7 +711,7 @@ h1 {
     pointer-events: none;
 }
 
-/* Customer Placeholder Visuals (CSS-only, no images) */
+/* Customer Placeholder Visuals (CSS-only, no images) ----------- */
 .customer-placeholder {
     width: 160px;
     height: 220px;
@@ -646,7 +720,8 @@ h1 {
     position: relative;
     overflow: hidden;
     transition: background-color 0.4s, border-radius 0.3s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    animation: float 7s ease-in-out infinite;
 }
 
 /* Head dot */
@@ -659,7 +734,7 @@ h1 {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(255, 255, 255, 0.22);
 }
 
 /* Body area */
@@ -672,36 +747,36 @@ h1 {
     width: 80%;
     height: 50%;
     border-radius: 40% 40% 0 0;
-    background-color: rgba(0,0,0,0.15);
+    background-color: rgba(0, 0, 0, 0.15);
 }
 
-/* 田中: warm orange — cheerful */
+/* 田中: warm terracotta — cheerful */
 .customer-tanaka {
-    background: linear-gradient(160deg, #e88c5a 0%, #c0704a 100%);
+    background: linear-gradient(160deg, #e0a878 0%, #c08862 100%);
 }
 
-/* 佐藤: soft lavender-blue — shy */
+/* 佐藤: soft dusty blue — shy */
 .customer-sato {
     width: 130px;
     height: 190px;
     border-radius: 50px 50px 25px 25px;
-    background: linear-gradient(160deg, #8ab4d4 0%, #6690b8 100%);
+    background: linear-gradient(160deg, #a8c0d4 0%, #8098b4 100%);
 }
 
-/* 鈴木: dark charcoal — strict */
+/* 鈴木: muted slate — strict */
 .customer-suzuki {
     border-radius: 20px 20px 10px 10px;
-    background: linear-gradient(160deg, #5a6472 0%, #3d4550 100%);
+    background: linear-gradient(160deg, #6a6478 0%, #48424f 100%);
 }
 
-/* 山田: earthy green — relaxed */
+/* 山田: sage green — relaxed */
 .customer-yamada {
     border-radius: 70px 70px 40px 40px;
-    background: linear-gradient(160deg, #7ab87a 0%, #5a9460 100%);
+    background: linear-gradient(160deg, #9cbf9a 0%, #769578 100%);
 }
 
-/* 中村: navy — businesslike */
+/* 中村: dusty plum — businesslike */
 .customer-nakamura {
     border-radius: 30px 30px 15px 15px;
-    background: linear-gradient(160deg, #4a6fa5 0%, #2c4e80 100%);
+    background: linear-gradient(160deg, #8878a0 0%, #5e5078 100%);
 }
